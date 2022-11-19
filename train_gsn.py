@@ -13,7 +13,10 @@ from utils.callbacks import GSNVizCallback
 from builders.builders import build_dataloader
 from utils.utils import instantiate_from_config
 from models.model_utils import TrajectorySampler
-
+import wandb
+from pytorch_lightning.loggers import WandbLogger
+# if args.local_rank==0:
+wandb.init(project='GSN', sync_tensorboard=True)
 
 def main(opt):
     # configure dataset so that each epoch has 1k iterations
@@ -61,8 +64,8 @@ def main(opt):
 
     callback_list = [viz_callback, checkpoint_callback]
 
-    logger = TensorBoardLogger(os.path.join(opt.log_dir, 'logs'), name="gsn")
-
+    # logger = TensorBoardLogger(os.path.join(opt.log_dir, 'logs'), name="gsn")
+    logger = WandbLogger()
     trainer = pl.Trainer(
         gpus=torch.cuda.device_count(),
         callbacks=callback_list,
